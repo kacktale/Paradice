@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
+  - Wall
+  - Slow
+  - Miniboss
+  - Boss
   layers:
   - Default
   - TransparentFX
@@ -12,10 +16,10 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Wall
+  - Player
+  - DashOnly
+  - HitLayer
   - 
   - 
   - 

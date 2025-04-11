@@ -15,7 +15,7 @@ public class CrossHair : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Vector2 MousePos = Camera.main.ScreenToWorldPoint( Input.mousePosition );
         transform.position = MousePos;
@@ -30,6 +30,9 @@ public class CrossHair : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D other)
     {
-        SpriteRenderer.sprite = Crosshair[0];
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            SpriteRenderer.sprite = Crosshair[0];
+        }
     }
 }

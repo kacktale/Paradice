@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ButtonDetail : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class ButtonDetail : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public bool CanZoom = true;
     private TextMeshProUGUI text;
@@ -36,6 +36,15 @@ public class ButtonDetail : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         {
             text.DOColor(mainColor, 1);
             text.gameObject.transform.DOScale(2.24f, 1);
+        }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (CanZoom)
+        {
+            text.DOColor(new Color(0, 0.5058824f, 0.8313726f), 1);
+            text.gameObject.transform.DOScale(2.28f, 1);
         }
     }
 }
