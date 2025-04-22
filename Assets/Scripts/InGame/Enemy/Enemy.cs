@@ -64,12 +64,9 @@ public class Enemy : MonoBehaviour
         switch (CurrentState)
         {
             case EnemyState.Idle:
-                FindPlayer();
                 IdleState();
                 break;
             case EnemyState.Walk:
-                WalkState();
-                FindPlayer();
                 Debug.Log("Walk");
                 break;
             case EnemyState.Run:
@@ -110,28 +107,22 @@ public class Enemy : MonoBehaviour
         if (!FoundPlayer)
         {
             CurrentState = EnemyState.Walk;
-            RaycastHit2D checkEdgeL = Physics2D.Raycast(transform.position + new Vector3(0.5f, 0), Vector2.left, 1, MoveLayerMask);
-            Debug.DrawRay(transform.position + new Vector3(0.5f, 0), Vector2.left, Color.blue);
-            RaycastHit2D checkEdgeR = Physics2D.Raycast(transform.position - new Vector3(0.5f, 0), Vector2.right, 1, MoveLayerMask);
-            Debug.DrawRay(transform.position - new Vector3(0.5f, 0), Vector2.right, Color.blue);
+            RaycastHit2D checkEdgeL = Physics2D.Raycast(transform.position, Vector2.left, 1, MoveLayerMask);
+            Debug.DrawRay(transform.position + new Vector3(0, 0.5f), Vector2.left, Color.red);
+            RaycastHit2D checkEdgeR = Physics2D.Raycast(transform.position, Vector2.right, 1, MoveLayerMask);
+            Debug.DrawRay(transform.position + new Vector3(0, 0.5f), Vector2.right, Color.blue);
 
-            if (checkEdgeL.collider != null && !EdgeL)
+            if (checkEdgeL.collider != null && EdgeL)
             {
-                if (checkEdgeL.collider.CompareTag("Wall"))
-                {
-                    EdgeL = true;
-                    CurrentState = EnemyState.Idle;
-                    IdleState();
-                }
+                EdgeL = false;
+                CurrentState = EnemyState.Idle;
+                IdleState();
             }
-            else if (checkEdgeR.collider != null && EdgeL)
+            else if (checkEdgeR.collider != null && !EdgeL)
             {
-                if (checkEdgeL.collider.CompareTag("Wall"))
-                {
-                    EdgeL = false;
-                    CurrentState = EnemyState.Idle;
-                    IdleState();
-                }
+                EdgeL = true;
+                CurrentState = EnemyState.Idle;
+                IdleState();
             }
             else/* if (checkEdgeR.collider && checkEdgeR.collider)*/
             {

@@ -1,53 +1,62 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
-public class ShortAttackMiniBoss : MonoBehaviour
+public class LongAttackMiniboss : MonoBehaviour
 {
     [Header("스텟")]
     public int Hp;
     public float backForce;
+    public bool LongAttack;
 
     [Header("인식관련")]
     public bool Mujuck;
     public LayerMask LayerMask;
+    private bool EdgeL = false;
+    public LayerMask MoveLayerMask;
     public GameObject Player;
+    private bool FoundPlayer = false;
 
     [Header("이펙트&파티클")]
     public ParticleSystem DamageParticle;
+    public ParticleSystem DeathParticle;
     public enum EnemyState
     {
-        Idle, Damage, Run, ShortAttack, Hide
+        Idle, Walk, Damage, Run,LongAttack
     }
     public EnemyState CurrentState = EnemyState.Idle;
 
     [Header("슬로우 관련")]
     public float MoveSpeed;
     public float AttackSpeed = 1;
+    private float BulletSpawnTime = 0.1f;
     private float ActTime = 3f;
     private float DMGOffTime = 0.3f;
+    private float CurSpawnTime;
+
+    public EnemyFinder FoundEnemy;
+    public GameObject Bullet;
 
     private SpriteRenderer Sprite;
     private Rigidbody2D Rigidbody;
 
     private bool IdleAnim = false;
-    [SerializeField]
     private bool IsAttack = false;
-    private bool IsHiding = false;
     // Start is called before the first frame update
     void Start()
     {
         Rigidbody = GetComponent<Rigidbody2D>();
-        Rigidbody.velocity = Vector3.zero;
         Sprite = GetComponent<SpriteRenderer>();
+        CurSpawnTime = BulletSpawnTime;
     }
 
     // Update is called once per frame
     void Update()
     {
         CheckState();
+        CurSpawnTime -= Time.deltaTime;
     }
 
     private void CheckState()
@@ -57,45 +66,45 @@ public class ShortAttackMiniBoss : MonoBehaviour
             case EnemyState.Idle:
                 IdleState();
                 break;
+            case EnemyState.Walk:
+                Debug.Log("Walk");
+                break;
             case EnemyState.Run:
                 FollowPlayer();
                 Debug.Log("Run");
                 break;
             case EnemyState.Damage:
+                FoundPlayer = true;
+                FoundEnemy.FoundPlayer = true;
+                FollowPlayer();
                 Debug.Log("Damage");
                 break;
-            case EnemyState.ShortAttack:
-                Debug.Log("ShortAttack");
-                break;
-            case EnemyState.Hide:
-                Debug.Log("Hide");
-                BackWardHide();
-                Invoke("FollowPlayer", ActTime);
+            case EnemyState.LongAttack:
+                Shooting();
                 break;
         }
     }
+    //idle 일시 애니메이션 재생후 다시 걷기
     void IdleState()
     {
-        if (!IdleAnim)
+        if (FoundEnemy.FoundPlayer)
         {
-            IdleAnim = true;
-            Invoke("HideState", ActTime);
+            Invoke("FollowPlayer", ActTime);
         }
     }
-
-    private void HideState()
+    public void FindPlayer()
     {
-        CurrentState = EnemyState.Hide;
-        Sprite.DOFade(0.1f, ActTime);
-    }
+        RaycastHit2D PlayerFinderR = Physics2D.Raycast(transform.position, Vector2.right, 2f, LayerMask);
+        Debug.DrawRay(transform.position, Vector2.right * 2f);
+        RaycastHit2D PlayerFinderL = Physics2D.Raycast(transform.position, Vector2.left, 2f, LayerMask);
+        Debug.DrawRay(transform.position, Vector2.left * 2f);
 
-    void BackWardHide()
-    {
-        Vector2 direction = (Player.transform.position - transform.position).normalized;
-        //플레이어가 적보다 오른쪽에 있을때
-        if (Player.transform.position.x > transform.position.x) transform.rotation = Quaternion.Euler(0, 180, 0);
-        else transform.rotation = Quaternion.Euler(0, 0, 0);
-        transform.position -= new Vector3(direction.x * MoveSpeed * 0.1f * Time.deltaTime, 0, 0);
+        if (PlayerFinderL.collider || PlayerFinderR.collider)
+        {
+            FoundPlayer = true;
+            CurrentState = EnemyState.Run;
+            FoundEnemy.FoundPlayer = true;
+        }
     }
 
     public void FollowPlayer()
@@ -106,64 +115,61 @@ public class ShortAttackMiniBoss : MonoBehaviour
             if (!IsAttack)
             {
                 IsAttack = true;
-                CurrentState = EnemyState.ShortAttack;
-                StartCoroutine(ShortAttackAnim());
+                if (!LongAttack)
+                {
+                    StartCoroutine(ShortAttackAnim());
+                }
             }
         }
         else
         {
-            if(!IsAttack)
+            if (!LongAttack)
             {
-                CurrentState = EnemyState.Run;
                 Vector2 direction = (Player.transform.position - transform.position).normalized;
                 //플레이어가 적보다 오른쪽에 있을때
                 if (Player.transform.position.x > transform.position.x)
                 {
-                    //Sprite.flipX = false;
-                    transform.rotation = Quaternion.Euler(0, 180, 0);
+                    Sprite.flipX = true;
                     transform.position += new Vector3(direction.x * MoveSpeed * Time.deltaTime, 0, 0);
                 }
                 //왼쪽에 있을때
-                else if (Player.transform.position.x < transform.position.x)
+                else
                 {
-                    //Sprite.flipX = true;
-                    transform.rotation = Quaternion.Euler(0,0,0);
+                    Sprite.flipX = false;
                     transform.position += new Vector3(direction.x * MoveSpeed * Time.deltaTime, 0, 0);
                 }
+            }
+            else
+            {
+                CurrentState = EnemyState.LongAttack;
             }
         }
     }
 
     IEnumerator ShortAttackAnim()
     {
-        Sprite.DOFade(1f, ActTime/10);
         yield return new WaitForSeconds(AttackSpeed);
         //공격
-        CurrentState = EnemyState.Idle;
-        yield return new WaitForSeconds(AttackSpeed *3);
-        CurrentState = EnemyState.Hide;
-        HideState();
+        yield return new WaitForSeconds(AttackSpeed);
+        CurrentState = EnemyState.Run;
         IsAttack = false;
     }
 
     public void OnDamage()
     {
-        
-        if(!Mujuck)
-        {
-            Hp--;
-            if (Hp <= 0) Destroy(gameObject);
-            Mujuck = true;
-            Sprite.color = Color.red;
-            CurrentState = EnemyState.Damage;
-            Sprite.DOFade(0.5f, DMGOffTime);
-            Invoke("OffDamage", DMGOffTime);
-        }
+        CurrentState = EnemyState.Damage;
+        Hp--;
+        if (Hp <= 0) Destroy(gameObject);
+        Mujuck = true;
+        Sprite.color = Color.red;
+        Sprite.DOFade(0.5f, DMGOffTime);
+        Invoke("OffDamage", DMGOffTime);
     }
 
     private void OffDamage()
     {
-        //if(!IsAttack)   CurrentState = EnemyState.Run;
+        if (FoundPlayer) CurrentState = EnemyState.Run;
+        else CurrentState = EnemyState.Idle;
         Mujuck = false;
         Sprite.color = Color.white;
         Sprite.DOFade(1f, DMGOffTime);
@@ -192,12 +198,24 @@ public class ShortAttackMiniBoss : MonoBehaviour
         }
     }
 
+    private void Shooting()
+    {
+        if (CurSpawnTime <= 0)
+        {
+            CurSpawnTime = BulletSpawnTime;
+            GameObject OneBullet = Instantiate(Bullet, transform.position, Quaternion.identity);
+            Bullet TargetSc = OneBullet.GetComponent<Bullet>();
+            TargetSc.player = Player;
+        }
+    }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Slow"))
         {
             MoveSpeed /= 2;
+            BulletSpawnTime *= 2;
             DMGOffTime *= 2;
             ActTime *= 2;
             AttackSpeed *= 2;
@@ -209,6 +227,7 @@ public class ShortAttackMiniBoss : MonoBehaviour
         if (collision.gameObject.CompareTag("Slow"))
         {
             MoveSpeed *= 2;
+            BulletSpawnTime /= 2;
             DMGOffTime /= 2;
             ActTime /= 2;
             AttackSpeed /= 2;
@@ -218,5 +237,8 @@ public class ShortAttackMiniBoss : MonoBehaviour
     private void OnDestroy()
     {
         Sprite.color = new Color(0, 0, 0, 0);
+        ParticleSystem particle = Instantiate(DeathParticle);
+        particle.gameObject.transform.position = transform.position;
+        particle.Play();
     }
 }

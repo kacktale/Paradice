@@ -225,7 +225,6 @@ public class Player : MonoBehaviour
                         StartCoroutine(enemyHp.BackMove(AttackLeftOrRight(transform)));
                         enemyHp.OnDamage();
                     }
-                    Invoke("OffZoom", 0.5f);
                 }
             }
             else if (Enemyhit.collider.CompareTag("Miniboss"))
@@ -246,7 +245,6 @@ public class Player : MonoBehaviour
                         StartCoroutine(enemyHp.BackMove(AttackLeftOrRight(transform)));
                         enemyHp.OnDamage();
                     }
-                    Invoke("OffZoom", 0.5f);
                 }
             }
         }
@@ -257,7 +255,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(DashTime);
 
         gameObject.layer = defaultLayer;
-
+        OffZoom();
         CanDash = false;
         Effect.transform.DOScale(0, 0.1f);
         rb.velocity = Vector2.zero;
