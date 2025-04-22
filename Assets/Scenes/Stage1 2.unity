@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 277049883}
   m_Layer: 9
   m_Name: MiniBoss (1)
-  m_TagString: Miniboss
+  m_TagString: MiniBossLong
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -289,7 +289,7 @@ MonoBehaviour:
   Mujuck: 0
   LayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   MoveLayerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -297,7 +297,7 @@ MonoBehaviour:
   DamageParticle: {fileID: 0}
   DeathParticle: {fileID: 0}
   CurrentState: 0
-  MoveSpeed: 0
+  MoveSpeed: 10
   AttackSpeed: 1
   FoundEnemy: {fileID: 0}
   Bullet: {fileID: 7562334722042687214, guid: b9a8e3e35ab66eb419f37e9ad86fbe53, type: 3}
@@ -525,7 +525,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!50 &606269513
 Rigidbody2D:
   serializedVersion: 4

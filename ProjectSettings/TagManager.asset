@@ -9,6 +9,7 @@ TagManager:
   - Slow
   - Miniboss
   - Boss
+  - MiniBossLong
   layers:
   - Default
   - TransparentFX

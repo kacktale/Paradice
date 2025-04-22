@@ -2,7 +2,9 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class LongAttackMiniboss : MonoBehaviour
 {
@@ -18,13 +20,15 @@ public class LongAttackMiniboss : MonoBehaviour
     public LayerMask MoveLayerMask;
     public GameObject Player;
     private bool FoundPlayer = false;
+    private float MoveVertical = 0;
+
 
     [Header("이펙트&파티클")]
     public ParticleSystem DamageParticle;
     public ParticleSystem DeathParticle;
     public enum EnemyState
     {
-        Idle, Walk, Damage, Run,LongAttack
+        Idle, Walk, Damage, Run, LongAttack
     }
     public EnemyState CurrentState = EnemyState.Idle;
 
@@ -57,6 +61,14 @@ public class LongAttackMiniboss : MonoBehaviour
     {
         CheckState();
         CurSpawnTime -= Time.deltaTime;
+        if(MoveVertical < -1)
+        {
+            MoveVertical += Time.deltaTime/10;
+        }
+        else if(MoveVertical > 1) 
+        {
+            MoveVertical -= Time.deltaTime/10;
+        }
     }
 
     private void CheckState()
@@ -75,7 +87,6 @@ public class LongAttackMiniboss : MonoBehaviour
                 break;
             case EnemyState.Damage:
                 FoundPlayer = true;
-                FoundEnemy.FoundPlayer = true;
                 FollowPlayer();
                 Debug.Log("Damage");
                 break;
@@ -87,24 +98,7 @@ public class LongAttackMiniboss : MonoBehaviour
     //idle 일시 애니메이션 재생후 다시 걷기
     void IdleState()
     {
-        if (FoundEnemy.FoundPlayer)
-        {
-            Invoke("FollowPlayer", ActTime);
-        }
-    }
-    public void FindPlayer()
-    {
-        RaycastHit2D PlayerFinderR = Physics2D.Raycast(transform.position, Vector2.right, 2f, LayerMask);
-        Debug.DrawRay(transform.position, Vector2.right * 2f);
-        RaycastHit2D PlayerFinderL = Physics2D.Raycast(transform.position, Vector2.left, 2f, LayerMask);
-        Debug.DrawRay(transform.position, Vector2.left * 2f);
-
-        if (PlayerFinderL.collider || PlayerFinderR.collider)
-        {
-            FoundPlayer = true;
-            CurrentState = EnemyState.Run;
-            FoundEnemy.FoundPlayer = true;
-        }
+        Invoke("FollowPlayer", ActTime);
     }
 
     public void FollowPlayer()
@@ -115,49 +109,71 @@ public class LongAttackMiniboss : MonoBehaviour
             if (!IsAttack)
             {
                 IsAttack = true;
-                if (!LongAttack)
-                {
-                    StartCoroutine(ShortAttackAnim());
-                }
+                StayAwayFromPlayer();
+            }
+        }
+        else if (distance <= 5)
+        {
+            Vector2 direction = (Player.transform.position - transform.position).normalized;
+            //플레이어가 적보다 오른쪽에 있을때
+            if (Player.transform.position.x > transform.position.x)
+            {
+                ChargeBackMove(1);
+                Invoke("Shooting", 2);
+            }
+            //왼쪽에 있을때
+            else
+            {
+                ChargeBackMove(-1);
+                Invoke("Shooting", 2);
             }
         }
         else
         {
-            if (!LongAttack)
+            Vector2 direction = (Player.transform.position - transform.position).normalized;
+            //플레이어가 적보다 오른쪽에 있을때
+            if (Player.transform.position.x > transform.position.x)
             {
-                Vector2 direction = (Player.transform.position - transform.position).normalized;
-                //플레이어가 적보다 오른쪽에 있을때
-                if (Player.transform.position.x > transform.position.x)
-                {
-                    Sprite.flipX = true;
-                    transform.position += new Vector3(direction.x * MoveSpeed * Time.deltaTime, 0, 0);
-                }
-                //왼쪽에 있을때
-                else
-                {
-                    Sprite.flipX = false;
-                    transform.position += new Vector3(direction.x * MoveSpeed * Time.deltaTime, 0, 0);
-                }
+                Sprite.flipX = true;
+                transform.position += new Vector3(direction.x, 0, 0) * MoveSpeed * Time.deltaTime;
             }
+            //왼쪽에 있을때
             else
             {
-                CurrentState = EnemyState.LongAttack;
+                Sprite.flipX = false;
+                transform.position += new Vector3(direction.x, 0, 0) * MoveSpeed * Time.deltaTime;
             }
         }
     }
 
-    IEnumerator ShortAttackAnim()
+    void ChargeBackMove(int a)
     {
-        yield return new WaitForSeconds(AttackSpeed);
-        //공격
-        yield return new WaitForSeconds(AttackSpeed);
-        CurrentState = EnemyState.Run;
-        IsAttack = false;
+        transform.position += new Vector3(a, 1, 0) * Time.deltaTime / 100;
+    }
+
+    void StayAwayFromPlayer()
+    {
+        float PlayerPos = Player.transform.position.y;
+        Vector3 NextMovePos = Vector3.zero;
+
+        int a = Random.Range(0, 1);
+
+        if (a == 1)
+        {
+            NextMovePos.x = PlayerPos + 2;
+            Sprite.flipX = false;
+        }
+        else
+        {
+            NextMovePos.x = PlayerPos - 2;
+            Sprite.flipX = true;
+        }
+        transform.position = Vector3.MoveTowards(transform.position, NextMovePos, Time.deltaTime * MoveSpeed);
     }
 
     public void OnDamage()
     {
-        CurrentState = EnemyState.Damage;
+        //CurrentState = EnemyState.Damage;
         Hp--;
         if (Hp <= 0) Destroy(gameObject);
         Mujuck = true;
@@ -168,43 +184,22 @@ public class LongAttackMiniboss : MonoBehaviour
 
     private void OffDamage()
     {
-        if (FoundPlayer) CurrentState = EnemyState.Run;
-        else CurrentState = EnemyState.Idle;
+        //if (FoundPlayer) CurrentState = EnemyState.Run;
+        //else CurrentState = EnemyState.Idle;
         Mujuck = false;
         Sprite.color = Color.white;
         Sprite.DOFade(1f, DMGOffTime);
-    }
-
-    public IEnumerator BackMove(bool Left)
-    {
-        if (Hp > 1)
-        {
-            if (Left)
-            {
-                Rigidbody.velocity = transform.position / 400 + Vector3.left * backForce;
-                DamageParticle.gameObject.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-                DamageParticle.Play();
-                yield return new WaitForSeconds(0.1f);
-                Rigidbody.velocity = Vector2.zero;
-            }
-            else
-            {
-                Rigidbody.velocity = transform.position / 400 - Vector3.left * backForce;
-                DamageParticle.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-                DamageParticle.Play();
-                yield return new WaitForSeconds(0.1f);
-                Rigidbody.velocity = Vector2.zero;
-            }
-        }
     }
 
     private void Shooting()
     {
         if (CurSpawnTime <= 0)
         {
+            CurrentState = EnemyState.LongAttack;
             CurSpawnTime = BulletSpawnTime;
             GameObject OneBullet = Instantiate(Bullet, transform.position, Quaternion.identity);
             Bullet TargetSc = OneBullet.GetComponent<Bullet>();
+            TargetSc.Recoil = false;
             TargetSc.player = Player;
         }
     }

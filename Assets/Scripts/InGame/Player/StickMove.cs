@@ -27,17 +27,14 @@ public class StickMove : MonoBehaviour
         ShootPos = TargetPos.position;
         moveDirection = (ShootPos - transform.position).normalized;
 
-        // 🔴 플레이어가 벽에 너무 가까운지 체크
         isNearWall = Physics2D.Raycast(player.position, moveDirection, 0.6f, WallLayer);
 
         if (isNearWall)
         {
-            // 🔵 플레이어가 벽에 붙어 있다면 창을 살짝 더 앞으로 생성
             transform.position = player.position + (Vector3)moveDirection * 0.6f;
         }
         else
         {
-            // 🔵 평소처럼 생성
             transform.position += moveDirection * 0.5f;
         }
 
@@ -133,6 +130,18 @@ public class StickMove : MonoBehaviour
             {
                 PhysicReload(collision.gameObject);
                 ShortAttackMiniBoss enemyHp = collision.gameObject.GetComponent<ShortAttackMiniBoss>();
+                if (!enemyHp.Mujuck)
+                {
+                    enemyHp.OnDamage();
+                }
+            }
+        }
+        if (collision.gameObject.CompareTag("MiniBossLong"))
+        {
+            if (!IsGrab)
+            {
+                PhysicReload(collision.gameObject);
+                LongAttackMiniboss enemyHp = collision.gameObject.GetComponent<LongAttackMiniboss>();
                 if (!enemyHp.Mujuck)
                 {
                     enemyHp.OnDamage();
