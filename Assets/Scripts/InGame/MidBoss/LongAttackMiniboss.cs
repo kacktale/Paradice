@@ -28,14 +28,14 @@ public class LongAttackMiniboss : MonoBehaviour
     public ParticleSystem DeathParticle;
     public enum EnemyState
     {
-        Idle, Walk, Damage, Run, LongAttack
+        Idle, Walk, Damage, Run, LongAttack, Charge
     }
     public EnemyState CurrentState = EnemyState.Idle;
 
     [Header("슬로우 관련")]
     public float MoveSpeed;
     public float AttackSpeed = 1;
-    private float BulletSpawnTime = 0.1f;
+    private float BulletSpawnTime = 0.0f;
     private float ActTime = 3f;
     private float DMGOffTime = 0.3f;
     private float CurSpawnTime;
@@ -46,8 +46,9 @@ public class LongAttackMiniboss : MonoBehaviour
     private SpriteRenderer Sprite;
     private Rigidbody2D Rigidbody;
 
-    private bool IdleAnim = false;
+    private bool ChargeAnim = false;
     private bool IsAttack = false;
+    private bool LazerAnim = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -92,12 +93,27 @@ public class LongAttackMiniboss : MonoBehaviour
                 break;
             case EnemyState.LongAttack:
                 Shooting();
+                if (!LazerAnim)
+                {
+                    LazerAnim = true;
+                    ChargeAnim = false;
+                    Invoke("StopAttack", 4);
+                }
                 break;
+            case EnemyState.Charge:
+                if (!ChargeAnim)
+                {
+                    ChargeAnim = true;
+                    LazerAnim = false;
+                    Invoke("Shooting",2);
+                }
+            break;
         }
     }
     //idle 일시 애니메이션 재생후 다시 걷기
     void IdleState()
     {
+        CurrentState = EnemyState.Idle;
         Invoke("FollowPlayer", ActTime);
     }
 
@@ -114,19 +130,7 @@ public class LongAttackMiniboss : MonoBehaviour
         }
         else if (distance <= 5)
         {
-            Vector2 direction = (Player.transform.position - transform.position).normalized;
-            //플레이어가 적보다 오른쪽에 있을때
-            if (Player.transform.position.x > transform.position.x)
-            {
-                ChargeBackMove(1);
-                Invoke("Shooting", 2);
-            }
-            //왼쪽에 있을때
-            else
-            {
-                ChargeBackMove(-1);
-                Invoke("Shooting", 2);
-            }
+            CurrentState = EnemyState.Charge;
         }
         else
         {
@@ -146,9 +150,9 @@ public class LongAttackMiniboss : MonoBehaviour
         }
     }
 
-    void ChargeBackMove(int a)
+    public void StopAttack()
     {
-        transform.position += new Vector3(a, 1, 0) * Time.deltaTime / 100;
+        CurrentState = EnemyState.Idle;
     }
 
     void StayAwayFromPlayer()

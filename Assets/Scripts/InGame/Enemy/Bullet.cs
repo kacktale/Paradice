@@ -22,10 +22,10 @@ public class Bullet : MonoBehaviour
         }
         else
         {
-            Vector3 movePosition = player.transform.position + new Vector3 (0,-1,0);
+            Vector3 movePosition = player.transform.position/* + new Vector3 (0,-1,0)*/;
             targetPosition = (movePosition - transform.position).normalized;
         }
-        transform.position += Vector3.up;
+        //transform.position += Vector3.up;
     }
 
     // Update is called once per frame
