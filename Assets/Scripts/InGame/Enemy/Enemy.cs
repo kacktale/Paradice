@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour
     [Header("인식관련")]
     public bool Mujuck;
     public LayerMask LayerMask;
-    private bool EdgeL = false;
+    public bool EdgeL = false;
     public LayerMask MoveLayerMask;
     public GameObject Player;
     private bool FoundPlayer = false;
@@ -68,6 +68,8 @@ public class Enemy : MonoBehaviour
                 break;
             case EnemyState.Walk:
                 Debug.Log("Walk");
+                WalkState();
+                FindPlayer();
                 break;
             case EnemyState.Run:
                 FollowPlayer();
@@ -112,32 +114,46 @@ public class Enemy : MonoBehaviour
             RaycastHit2D checkEdgeR = Physics2D.Raycast(transform.position, Vector2.right, 1, MoveLayerMask);
             Debug.DrawRay(transform.position + new Vector3(0, 0.5f), Vector2.right, Color.blue);
 
-            if (checkEdgeL.collider != null && EdgeL)
+            Debug.Log(checkEdgeL.collider);
+            Debug.Log(checkEdgeR.collider);
+
+            if (checkEdgeL.collider != null && EdgeL && checkEdgeL.collider.gameObject.tag != "Enemy")
             {
                 EdgeL = false;
                 CurrentState = EnemyState.Idle;
                 IdleState();
             }
-            else if (checkEdgeR.collider != null && !EdgeL)
+            else if (checkEdgeR.collider != null && !EdgeL && checkEdgeL.collider.gameObject.tag != "Enemy")
             {
                 EdgeL = true;
                 CurrentState = EnemyState.Idle;
                 IdleState();
             }
-            else/* if (checkEdgeR.collider && checkEdgeR.collider)*/
+            else
             {
+                Debug.Log("근처에 벽없음");
                 if (!EdgeL)
                 {
-                    Sprite.flipX = true;
-                    transform.position += new Vector3(MoveSpeed * Time.deltaTime, 0, 0);
+                    MoveRight();
                 }
                 else
                 {
-                    Sprite.flipX = false;
-                    transform.position -= new Vector3(MoveSpeed * Time.deltaTime, 0, 0);
+                    MoveLeft();
                 }
             }
         }
+    }
+
+    void MoveLeft()
+    {
+        Sprite.flipX = false;
+        transform.position -= new Vector3(MoveSpeed * Time.deltaTime, 0, 0);
+    }
+
+    void MoveRight()
+    {
+        Sprite.flipX = true;
+        transform.position += new Vector3(MoveSpeed * Time.deltaTime, 0, 0);
     }
 
     public void FindPlayer()
@@ -198,7 +214,12 @@ public class Enemy : MonoBehaviour
     IEnumerator ShortAttackAnim()
     {
         yield return new WaitForSeconds(AttackSpeed);
-        //공격
+        Player player = Player.GetComponent<Player>();
+        float distance = MathF.Abs(Player.transform.position.x - transform.position.x);
+        if (distance <= 1)
+        {
+            player.OnDamage();
+        }
         yield return new WaitForSeconds(AttackSpeed);
         CurrentState = EnemyState.Run;
         IsAttack = false;
@@ -280,6 +301,14 @@ public class Enemy : MonoBehaviour
             DMGOffTime /= 2;
             ActTime /= 2;
             AttackSpeed /= 2;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            EdgeL = !EdgeL;
         }
     }
 

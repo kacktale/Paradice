@@ -10,6 +10,9 @@ public class Player : MonoBehaviour
     public float MoveSpeed;
     public float JumpForce;
     public bool IsJump = false;
+    public float MaxHealth;
+    private float CurHealth;
+    public bool Mujuck = false;
 
     [Header("무기")]
     public GameObject Effect;
@@ -40,6 +43,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        CurHealth = MaxHealth;
         rb = GetComponent<Rigidbody2D>();
         RemainStick = 2;
         defaultLayer = gameObject.layer;
@@ -167,6 +171,26 @@ public class Player : MonoBehaviour
 
     }
 
+    public void OnDamage()
+    {
+        CurHealth--;
+        if (CurHealth <= 0)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            MoveSpeed /= 2;
+            Invoke("OffDamage", 0.5f);
+            VirtualCamera.m_Lens.OrthographicSize = 4.8f;
+        }
+    }
+
+    void OffDamage()
+    {
+        ZoomIn = false;
+        MoveSpeed *= 2;
+    }
     void Jump()
     {
         rb.velocity = new Vector2(rb.velocity.x, JumpForce);

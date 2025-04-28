@@ -103,6 +103,7 @@ MonoBehaviour:
   MoveSpeed: 5
   JumpForce: 3
   IsJump: 0
+  MaxHealth: 10
   Effect: {fileID: 7499970625982829183}
   Stick: {fileID: 4301422635556445393, guid: cab7188e3e9fc684ea11959290d072d9, type: 3}
   CrossHair: {fileID: 0}
@@ -115,6 +116,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   VirtualCamera: {fileID: 0}
+  dashLayerName: DashOnly
 --- !u!70 &4235928569604263061
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

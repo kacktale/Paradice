@@ -143,9 +143,10 @@ MonoBehaviour:
   LayerMask:
     serializedVersion: 2
     m_Bits: 128
+  EdgeL: 0
   MoveLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 576
   Player: {fileID: 0}
   DamageParticle: {fileID: 4821316105059189695}
   DeathParticle: {fileID: 2411551626875419248, guid: 6f92f33ffec2fec42b96e823fad1b62b, type: 3}
