@@ -17,7 +17,7 @@ public class UIDetail : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        BlurEffect.BlurRadius = 0f;
+        
     }
 
     // Update is called once per frame

@@ -8862,7 +8862,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InputTexture: {fileID: 0}
-  blurRadius: 90.6
+  blurRadius: 0
   BlurMode: 1
   CropCamera: {fileID: 0}
   contrast: 1

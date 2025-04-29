@@ -3,6 +3,8 @@ using DG.Tweening;
 using System.Collections;
 using System.Globalization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -40,15 +42,19 @@ public class Player : MonoBehaviour
     private Vector2 PlayerMaxYPos;
     private int defaultLayer;
     public string dashLayerName = "DashOnly";
+    public Image Transition;
 
-    void Start()
+    void Awake()
     {
         CurHealth = MaxHealth;
         rb = GetComponent<Rigidbody2D>();
         RemainStick = 2;
         defaultLayer = gameObject.layer;
     }
-
+    private void Start()
+    {
+        FadeOut();
+    }
     void FixedUpdate()
     {
         if (IsJump)
@@ -83,7 +89,6 @@ public class Player : MonoBehaviour
             rb.velocity = new Vector2(h * MoveSpeed, rb.velocity.y);
         }
     }
-
     private void Update()
     {
         JumpCheck();
@@ -104,7 +109,7 @@ public class Player : MonoBehaviour
             }
         }
         //젓가락 날리기
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && MoveSpeed != 0)
         {
             if (RemainStick > 0)
             {
@@ -168,15 +173,13 @@ public class Player : MonoBehaviour
                 VirtualCamera.m_Lens.OrthographicSize = 5f;
             }
         }
-
     }
-
     public void OnDamage()
     {
         CurHealth--;
         if (CurHealth <= 0)
         {
-            Destroy(gameObject);
+            OnDeath();
         }
         else
         {
@@ -185,7 +188,6 @@ public class Player : MonoBehaviour
             VirtualCamera.m_Lens.OrthographicSize = 4.8f;
         }
     }
-
     void OffDamage()
     {
         ZoomIn = false;
@@ -196,23 +198,20 @@ public class Player : MonoBehaviour
         rb.velocity = new Vector2(rb.velocity.x, JumpForce);
         IsJump = true;
         CanJump = false;
-        canCheckGround = false; // 일정 시간 동안 바닥 감지 방지
+        canCheckGround = false;
         StartCoroutine(EnableGroundCheckAfterDelay());
     }
-
     IEnumerator EnableGroundCheckAfterDelay()
     {
         yield return new WaitForSeconds(jumpBufferTime);
         canCheckGround = true; // 일정 시간 후 바닥 체크 활성화
     }
-
     IEnumerator StickEffect()
     {
         VirtualCamera.m_Lens.OrthographicSize = 4.7f;
         yield return new WaitForSeconds(0.4f);
         ZoomIn = false;
     }
-
     IEnumerator Dash()
     {
 
@@ -288,12 +287,10 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         CanDash = true;
     }
-
     void OffZoom()
     {
         ZoomIn = false;
     }
-
     void JumpCheck()
     {
         if (!canCheckGround) return;
@@ -314,7 +311,35 @@ public class Player : MonoBehaviour
             Effect.transform.DOScale(0, 0.1f);
         }
     }
-
+    void OnDeath()
+    {
+        MoveSpeed = 0f;
+        rb.gravityScale = 0f;
+        CanJump = false;
+        ZoomIn = true;
+        CanDash = false;
+        FadeIN(0);
+    }
+    void FadeIN(int Rooom)
+    {
+        Transition.DOFade(1, 1);
+        NextRoom(Rooom);
+    }
+    void NextRoom(int a)
+    {
+        if(a == 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        else
+        {
+            SceneManager.LoadScene(a-1);
+        }
+    }
+    void FadeOut()
+    {
+        Transition.DOFade(0, 1);
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Wall"))

@@ -67,22 +67,22 @@ public class Enemy : MonoBehaviour
                 IdleState();
                 break;
             case EnemyState.Walk:
-                Debug.Log("Walk");
+                //Debug.Log("Walk");
                 WalkState();
                 FindPlayer();
                 break;
             case EnemyState.Run:
                 FollowPlayer();
-                Debug.Log("Run");
+                //Debug.Log("Run");
                 break;
             case EnemyState.Damage:
                 FoundPlayer = true;
                 FoundEnemy.FoundPlayer = true;
                 FollowPlayer();
-                Debug.Log("Damage");
+                //Debug.Log("Damage");
                 break;
             case EnemyState.ShortAttack:
-                Debug.Log("ShortAttack");
+                //Debug.Log("ShortAttack");
                 break;
             case EnemyState.LongAttack:
                 Shooting();
@@ -114,8 +114,8 @@ public class Enemy : MonoBehaviour
             RaycastHit2D checkEdgeR = Physics2D.Raycast(transform.position, Vector2.right, 1, MoveLayerMask);
             Debug.DrawRay(transform.position + new Vector3(0, 0.5f), Vector2.right, Color.blue);
 
-            Debug.Log(checkEdgeL.collider);
-            Debug.Log(checkEdgeR.collider);
+            //Debug.Log(checkEdgeL.collider);
+            //Debug.Log(checkEdgeR.collider);
 
             if (checkEdgeL.collider != null && EdgeL && checkEdgeL.collider.gameObject.tag != "Enemy")
             {
@@ -131,7 +131,7 @@ public class Enemy : MonoBehaviour
             }
             else
             {
-                Debug.Log("근처에 벽없음");
+                //Debug.Log("근처에 벽없음");
                 if (!EdgeL)
                 {
                     MoveRight();
@@ -181,6 +181,17 @@ public class Enemy : MonoBehaviour
                 IsAttack = true;
                 if (!LongAttack)
                 {
+                    Vector2 direction = (Player.transform.position - transform.position).normalized;
+                    //플레이어가 적보다 오른쪽에 있을때
+                    if (Player.transform.position.x > transform.position.x)
+                    {
+                        Sprite.flipX = true;
+                    }
+                    //왼쪽에 있을때
+                    else
+                    {
+                        Sprite.flipX = false;
+                    }
                     CurrentState = EnemyState.ShortAttack;
                     StartCoroutine(ShortAttackAnim());
                 }
@@ -229,7 +240,14 @@ public class Enemy : MonoBehaviour
     {
         CurrentState = EnemyState.Damage;
         Hp--;
-        if (Hp <= 0) Destroy(gameObject);
+        if (Hp <= 0)
+        {
+            Sprite.color = new Color(0, 0, 0, 0);
+            ParticleSystem particle = Instantiate(DeathParticle);
+            particle.gameObject.transform.position = transform.position;
+            particle.Play();
+            Destroy(gameObject);
+        }
         Mujuck = true;
         Sprite.color = Color.red;
         Sprite.DOFade(0.5f, DMGOffTime);
@@ -314,9 +332,6 @@ public class Enemy : MonoBehaviour
 
     private void OnDestroy()
     {
-        Sprite.color = new Color(0, 0, 0, 0);
-        ParticleSystem particle = Instantiate(DeathParticle);
-        particle.gameObject.transform.position = transform.position;
-        particle.Play();
+
     }
 }
