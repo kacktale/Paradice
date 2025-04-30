@@ -2,6 +2,7 @@ using Cinemachine;
 using DG.Tweening;
 using System.Collections;
 using System.Globalization;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -43,6 +44,8 @@ public class Player : MonoBehaviour
     private int defaultLayer;
     public string dashLayerName = "DashOnly";
     public Image Transition;
+    public Slider DashCoolUI;
+    public TextMeshProUGUI DashTXT;
 
     void Awake()
     {
@@ -51,9 +54,11 @@ public class Player : MonoBehaviour
         RemainStick = 2;
         defaultLayer = gameObject.layer;
     }
+
     private void Start()
     {
         FadeOut();
+        HIdeDashCool();
     }
     void FixedUpdate()
     {
@@ -149,6 +154,7 @@ public class Player : MonoBehaviour
             CanDash = false;
             IsDashing = true;
             StartCoroutine(Dash());
+            ShowDashCool();
         }
         //카메라 줌(이펙트)
         if (ZoomIn)
@@ -339,6 +345,15 @@ public class Player : MonoBehaviour
     void FadeOut()
     {
         Transition.DOFade(0, 1);
+    }
+    void ShowDashCool()
+    {
+        DashCoolUI.gameObject.transform.DOMoveX(100, 1);
+        Invoke("HIdeDashCool", 4);
+    }
+    void HIdeDashCool()
+    {
+        DashCoolUI.gameObject.transform.DOMoveX(-1000, 1);
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {

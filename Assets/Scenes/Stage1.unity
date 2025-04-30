@@ -453,7 +453,7 @@ RectTransform:
   m_Father: {fileID: 565709433}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -482,7 +482,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
-  m_FillAmount: 0
+  m_FillAmount: 0.792
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -582,7 +582,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.792
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -7625,7 +7625,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1214300408
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11431,6 +11431,10 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 3116690304183224869, guid: 60716f035a75c1340bb7d2903cb74ee2, type: 3}
+      propertyPath: DashTXT
+      value: 
+      objectReference: {fileID: 2042980308}
+    - target: {fileID: 3116690304183224869, guid: 60716f035a75c1340bb7d2903cb74ee2, type: 3}
       propertyPath: CrossHair
       value: 
       objectReference: {fileID: 1267737161}
@@ -11438,6 +11442,10 @@ PrefabInstance:
       propertyPath: MaxHealth
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 3116690304183224869, guid: 60716f035a75c1340bb7d2903cb74ee2, type: 3}
+      propertyPath: DashCoolUI
+      value: 
+      objectReference: {fileID: 266312083}
     - target: {fileID: 3116690304183224869, guid: 60716f035a75c1340bb7d2903cb74ee2, type: 3}
       propertyPath: Transition
       value: 
