@@ -27,10 +27,12 @@ public class Player : MonoBehaviour
     public float jumpBufferTime = 0.1f;
     private bool canCheckGround = true;
 
+    [Header("대쉬")]
     public bool CanDash = true;
     private bool IsDashing;
     public float DashSpeed = 20f;
     public float DashTime = 0.2f;
+    public float DashCool;
     public LayerMask WallLayer;
 
     [Header("이펙트")]
@@ -46,6 +48,9 @@ public class Player : MonoBehaviour
     public Image Transition;
     public Slider DashCoolUI;
     public TextMeshProUGUI DashTXT;
+    private bool ChargingAnim = false;
+
+    public GameObject IndicatorObj;
 
     void Awake()
     {
@@ -53,12 +58,14 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         RemainStick = 2;
         defaultLayer = gameObject.layer;
+        DashCoolUI.maxValue = DashCool;
+        DashCoolUI.value = 0;
     }
 
     private void Start()
     {
         FadeOut();
-        HIdeDashCool();
+        DashCoolUI.gameObject.transform.DOMoveX(-1000, 0);
     }
     void FixedUpdate()
     {
@@ -83,11 +90,11 @@ public class Player : MonoBehaviour
         if (!IsDashing)
         {
             float h = Input.GetAxisRaw("Horizontal");
-            if(h < 0)
+            if (h < 0)
             {
                 transform.rotation = Quaternion.Euler(0, -180, 0);
             }
-            else if(h > 0)
+            else if (h > 0)
             {
                 transform.rotation = Quaternion.Euler(0, 0, 0);
             }
@@ -120,6 +127,7 @@ public class Player : MonoBehaviour
             {
                 GameObject stick;
                 StickMove StickCs;
+                StickIndicator Indicator;
                 if (!CanJump)
                 {
                     if (transform.rotation == Quaternion.Euler(0, 0, 0))
@@ -154,7 +162,7 @@ public class Player : MonoBehaviour
             CanDash = false;
             IsDashing = true;
             StartCoroutine(Dash());
-            ShowDashCool();
+            StartCoroutine(ShowDashCool());
         }
         //카메라 줌(이펙트)
         if (ZoomIn)
@@ -290,7 +298,7 @@ public class Player : MonoBehaviour
         rb.velocity = Vector2.zero;
         IsDashing = false;
         MoveSpeed = 5;
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(DashCool);
         CanDash = true;
     }
     void OffZoom()
@@ -333,27 +341,33 @@ public class Player : MonoBehaviour
     }
     void NextRoom(int a)
     {
-        if(a == 0)
+        if (a == 0)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
         else
         {
-            SceneManager.LoadScene(a-1);
+            SceneManager.LoadScene(a - 1);
         }
     }
     void FadeOut()
     {
         Transition.DOFade(0, 1);
     }
-    void ShowDashCool()
+    IEnumerator ShowDashCool()
     {
+        DashTXT.text = "Charging...";
+        DashCoolUI.value = 0;
+        DashCoolUI.DOValue(DashCool, DashCool);
         DashCoolUI.gameObject.transform.DOMoveX(100, 1);
-        Invoke("HIdeDashCool", 4);
-    }
-    void HIdeDashCool()
-    {
-        DashCoolUI.gameObject.transform.DOMoveX(-1000, 1);
+        yield return new WaitForSeconds(DashCool);
+        ChargingAnim = true;
+        DashTXT.text = "Charged!";
+        yield return new WaitForSeconds(DashCool + 0.5f);
+        if (ChargingAnim)
+            DashCoolUI.gameObject.transform.DOMoveX(-1000, 1);
+        yield return new WaitForSeconds(1);
+        ChargingAnim = false;
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {

@@ -117,13 +117,13 @@ public class Enemy : MonoBehaviour
             //Debug.Log(checkEdgeL.collider);
             //Debug.Log(checkEdgeR.collider);
 
-            if (checkEdgeL.collider != null && EdgeL && checkEdgeL.collider.gameObject.tag != "Enemy")
+            if (checkEdgeL.collider != null && EdgeL/* && checkEdgeL.collider.gameObject.tag != "Enemy"*/)
             {
                 EdgeL = false;
                 CurrentState = EnemyState.Idle;
                 IdleState();
             }
-            else if (checkEdgeR.collider != null && !EdgeL && checkEdgeL.collider.gameObject.tag != "Enemy")
+            else if (checkEdgeR.collider != null && !EdgeL/* && checkEdgeL.collider.gameObject.tag != "Enemy"*/)
             {
                 EdgeL = true;
                 CurrentState = EnemyState.Idle;
