@@ -103,7 +103,6 @@ public class LongAttackMiniboss : MonoBehaviour
             case EnemyState.Charge:
                 if (!ChargeAnim)
                 {
-                    ChargeAnim = true;
                     LazerAnim = false;
                     Invoke("Shooting",2);
                 }
