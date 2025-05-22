@@ -51,6 +51,7 @@ public class Player : MonoBehaviour
     private bool ChargingAnim = false;
 
     public GameObject IndicatorObj;
+    public RectTransform TashUI;
 
     void Awake()
     {
@@ -64,6 +65,7 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        Invoke("TashUIHide", 2);
         FadeOut();
         DashCoolUI.gameObject.transform.DOMoveX(-1000, 0);
     }
@@ -353,6 +355,11 @@ public class Player : MonoBehaviour
     void FadeOut()
     {
         Transition.DOFade(0, 1);
+    }
+
+    void TashUIHide()
+    {
+        TashUI.DOAnchorPos(new Vector2(517,396),2);
     }
     IEnumerator ShowDashCool()
     {
