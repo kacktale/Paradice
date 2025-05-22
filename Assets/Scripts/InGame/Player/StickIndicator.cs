@@ -21,16 +21,17 @@ public class StickIndicator : MonoBehaviour
                 Indicator.SetActive(true);
             }
 
-            Vector2 Direction = Target.transform.position - transform.position;
+            //if(transform.localPosition.x > Indicator.transform.localPosition.x)
+            //{
+            //    Indicator.transform.position = new Vector3(8.27f, 0, 10);
+            //}
+            //else
+            //{
+            //    Indicator.transform.position = new Vector3(-8.27f, 0, 10);
+            //}
+            float lookdir = Mathf.Atan2(Indicator.transform.position.y - transform.position.y,Indicator.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
 
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, Direction);
-            Debug.DrawRay(transform.position, Direction);
-
-            if (hit.collider != null)
-            {
-                //Debug.Log(hit.transform.position);
-                Indicator.transform.position = hit.point;
-            }
+            Indicator.transform.rotation = Quaternion.Euler(0,0,lookdir-30);
         }
         else
         {

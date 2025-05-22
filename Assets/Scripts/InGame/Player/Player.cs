@@ -138,6 +138,9 @@ public class Player : MonoBehaviour
                         StickCs = stick.GetComponent<StickMove>();
                         StickCs.TargetPos = CrossHair.gameObject.transform;
                         StickCs.player = gameObject.transform;
+                        Indicator = stick.GetComponent<StickIndicator>();
+                        Indicator.Target = stick;
+                        Indicator.Indicator = IndicatorObj;
                     }
                     else
                     {
@@ -145,6 +148,9 @@ public class Player : MonoBehaviour
                         StickCs = stick.GetComponent<StickMove>();
                         StickCs.TargetPos = CrossHair.gameObject.transform;
                         StickCs.player = gameObject.transform;
+                        Indicator = stick.GetComponent<StickIndicator>();
+                        Indicator.Target = stick;
+                        Indicator.Indicator = IndicatorObj;
                     }
                 }
                 else
@@ -153,6 +159,9 @@ public class Player : MonoBehaviour
                     StickCs = stick.GetComponent<StickMove>();
                     StickCs.TargetPos = CrossHair.gameObject.transform;
                     StickCs.player = gameObject.transform;
+                    Indicator = stick.GetComponent<StickIndicator>();
+                    Indicator.Target = stick;
+                    Indicator.Indicator = IndicatorObj;
                 }
                 StartCoroutine(StickEffect());
                 RemainStick--;

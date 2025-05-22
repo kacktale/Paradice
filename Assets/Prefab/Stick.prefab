@@ -158,6 +158,7 @@ GameObject:
   - component: {fileID: -7100397134782416809}
   - component: {fileID: -2245299764684515455}
   - component: {fileID: 5721969611387659793}
+  - component: {fileID: -4813799430676707633}
   m_Layer: 0
   m_Name: Stick
   m_TagString: Untagged
@@ -318,3 +319,17 @@ CapsuleCollider2D:
   m_Offset: {x: 0.00081280083, y: -0.022171346}
   m_Size: {x: 1.1284555, y: 1.8088748}
   m_Direction: 1
+--- !u!114 &-4813799430676707633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4301422635556445393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3430b741ad54f0945b8820ec469fb388, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Indicator: {fileID: 0}
+  Target: {fileID: 0}
