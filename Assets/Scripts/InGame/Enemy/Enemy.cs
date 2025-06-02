@@ -229,7 +229,7 @@ public class Enemy : MonoBehaviour
         float distance = MathF.Abs(Player.transform.position.x - transform.position.x);
         if (distance <= 1)
         {
-            player.OnDamage();
+            player.OnDamage(1);
         }
         yield return new WaitForSeconds(AttackSpeed);
         CurrentState = EnemyState.Run;

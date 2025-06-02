@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     public float JumpForce;
     public bool IsJump = false;
     public float MaxHealth;
-    private float CurHealth;
+    public float CurHealth;
     public bool Mujuck = false;
 
     [Header("무기")]
@@ -53,6 +53,7 @@ public class Player : MonoBehaviour
     public GameObject IndicatorObj;
     public RectTransform TashUI;
 
+    public GameObject PausePanel;
     void Awake()
     {
         CurHealth = MaxHealth;
@@ -123,7 +124,7 @@ public class Player : MonoBehaviour
             }
         }
         //젓가락 날리기
-        if (Input.GetMouseButtonDown(0) && MoveSpeed != 0)
+        if (Input.GetMouseButtonDown(0) && MoveSpeed != 0 && Time.timeScale == 1)
         {
             if (RemainStick > 0)
             {
@@ -168,7 +169,7 @@ public class Player : MonoBehaviour
             }
         }
         //대쉬
-        if (Input.GetMouseButtonDown(1) && CanDash)
+        if (Input.GetMouseButtonDown(1) && CanDash && Time.timeScale == 1)
         {
             CanDash = false;
             IsDashing = true;
@@ -198,10 +199,28 @@ public class Player : MonoBehaviour
                 VirtualCamera.m_Lens.OrthographicSize = 5f;
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            if(!PausePanel.active)
+            {
+                PausePanel.SetActive(true);
+                Time.timeScale = 0;
+            }
+            else
+            {
+                PausePanel.SetActive(false);
+                Time.timeScale = 1;
+            }
+        }
+
+        if(RemainStick == 2) IndicatorObj.SetActive(false);
     }
-    public void OnDamage()
+    public void OnDamage(float Damage)
     {
-        CurHealth--;
+        if (Mujuck) return;
+        Mujuck = true;
+        CurHealth -= Damage;
         if (CurHealth <= 0)
         {
             OnDeath();
@@ -215,6 +234,7 @@ public class Player : MonoBehaviour
     }
     void OffDamage()
     {
+        Mujuck = false;
         ZoomIn = false;
         MoveSpeed *= 2;
     }
@@ -372,16 +392,17 @@ public class Player : MonoBehaviour
     }
     IEnumerator ShowDashCool()
     {
+        RectTransform pos = DashCoolUI.gameObject.GetComponent<RectTransform>();
         DashTXT.text = "Charging...";
         DashCoolUI.value = 0;
         DashCoolUI.DOValue(DashCool, DashCool);
-        DashCoolUI.gameObject.transform.DOMoveX(100, 1);
+        pos.DOAnchorPos3DX(-808.3f, 1);
         yield return new WaitForSeconds(DashCool);
         ChargingAnim = true;
         DashTXT.text = "Charged!";
         yield return new WaitForSeconds(DashCool + 0.5f);
         if (ChargingAnim)
-            DashCoolUI.gameObject.transform.DOMoveX(-1000, 1);
+            pos.DOAnchorPos3DX(-1400, 1);
         yield return new WaitForSeconds(1);
         ChargingAnim = false;
     }

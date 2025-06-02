@@ -44,6 +44,12 @@ public class Bullet : MonoBehaviour
         {
             Speed /= 2;
         }
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Player player = collision.gameObject.GetComponent<Player>();
+            player.OnDamage(0.3f);
+            Destroy(gameObject);
+        }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {

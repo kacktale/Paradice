@@ -10,14 +10,16 @@ public class UIDetail : MonoBehaviour
     public GameObject SettingObject;
     public GameObject Outline;
     public BlurEffect BlurEffect;
-    public GameObject Text;
+    public RectTransform Text;
+    public Transform Circle;
     public GameObject[] SettingPanels;
 
     private bool BlurOn = false;
     // Start is called before the first frame update
     void Start()
     {
-        
+        Text.DOAnchorPos(Vector2.zero,1).SetEase(Ease.OutQuint);
+        Circle.DOMoveX(3.52f,1).SetEase(Ease.OutQuint);
     }
 
     // Update is called once per frame
@@ -54,13 +56,13 @@ public class UIDetail : MonoBehaviour
         {
             BlurOn = true;
             SettingPanels[0].SetActive(true);
-            Text.SetActive(false);
+            Text.gameObject.SetActive(false);
         }
         else
         {
             BlurOn = false;
             SettingPanels[0].SetActive(false);
-            Text.SetActive(true);
+            Text.gameObject.SetActive(true);
         }
     }
 }

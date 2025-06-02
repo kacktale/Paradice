@@ -20,7 +20,7 @@ public class SaveData : MonoBehaviour
     void Awake()
     {
         SAVE_DATA_DIRECTORY = Application.dataPath + "/Saves/";
-        Starting();
+        CheckDataFile();
     }
 
     // Update is called once per frame
@@ -49,7 +49,7 @@ public class SaveData : MonoBehaviour
         }
     }
 
-    public void Starting()
+    public void CheckDataFile()
     {
         if (!Directory.Exists(SAVE_DATA_DIRECTORY))
         {
