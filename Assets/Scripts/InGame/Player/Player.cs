@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
 {
     [Header("플레이어 스탯")]
     public float MoveSpeed;
+    private float MaxSpeed;
     public float JumpForce;
     public bool IsJump = false;
     public float MaxHealth;
@@ -54,6 +55,7 @@ public class Player : MonoBehaviour
     public RectTransform TashUI;
 
     public GameObject PausePanel;
+    public Slider hpBar;
     void Awake()
     {
         CurHealth = MaxHealth;
@@ -62,6 +64,9 @@ public class Player : MonoBehaviour
         defaultLayer = gameObject.layer;
         DashCoolUI.maxValue = DashCool;
         DashCoolUI.value = 0;
+        hpBar.maxValue = MaxHealth;
+        hpBar.value = CurHealth;
+        MaxSpeed = MoveSpeed;
     }
 
     private void Start()
@@ -103,6 +108,7 @@ public class Player : MonoBehaviour
             }
             rb.velocity = new Vector2(h * MoveSpeed, rb.velocity.y);
         }
+        hpBar.value = CurHealth;
     }
     private void Update()
     {
@@ -236,7 +242,7 @@ public class Player : MonoBehaviour
     {
         Mujuck = false;
         ZoomIn = false;
-        MoveSpeed *= 2;
+        MoveSpeed = MaxSpeed;
     }
     void Jump()
     {
