@@ -62,13 +62,13 @@ public class LongAttackMiniboss : MonoBehaviour
     {
         CheckState();
         CurSpawnTime -= Time.deltaTime;
-        if(MoveVertical < -1)
+        if (MoveVertical < -1)
         {
-            MoveVertical += Time.deltaTime/10;
+            MoveVertical += Time.deltaTime / 10;
         }
-        else if(MoveVertical > 1) 
+        else if (MoveVertical > 1)
         {
-            MoveVertical -= Time.deltaTime/10;
+            MoveVertical -= Time.deltaTime / 10;
         }
     }
 
@@ -104,9 +104,9 @@ public class LongAttackMiniboss : MonoBehaviour
                 if (!ChargeAnim)
                 {
                     LazerAnim = false;
-                    Invoke("Shooting",2);
+                    Invoke("Shooting", 2);
                 }
-            break;
+                break;
         }
     }
     //idle 일시 애니메이션 재생후 다시 걷기
@@ -194,17 +194,20 @@ public class LongAttackMiniboss : MonoBehaviour
         Sprite.DOFade(1f, DMGOffTime);
     }
 
-    private void Shooting()
+    private IEnumerator Shooting()
     {
-        if (CurSpawnTime <= 0)
-        {
-            CurrentState = EnemyState.LongAttack;
-            CurSpawnTime = BulletSpawnTime;
-            GameObject OneBullet = Instantiate(Bullet, transform.position, Quaternion.identity);
-            Bullet TargetSc = OneBullet.GetComponent<Bullet>();
-            TargetSc.Recoil = false;
-            TargetSc.player = Player;
-        }
+        CurrentState = EnemyState.LongAttack;
+        CurSpawnTime = BulletSpawnTime;
+        Vector3 PlayerPos = Player.transform.position;
+
+        yield return new WaitForSeconds(CurSpawnTime);
+
+
+
+        //GameObject OneBullet = Instantiate(Bullet, transform.position, Quaternion.identity);
+        //Bullet TargetSc = OneBullet.GetComponent<Bullet>();
+        //TargetSc.Recoil = false;
+        //TargetSc.player = Player;
     }
 
 

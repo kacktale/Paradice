@@ -12,14 +12,18 @@ public class UIDetail : MonoBehaviour
     public BlurEffect BlurEffect;
     public RectTransform Text;
     public Transform Circle;
+    public Transform Player;
     public GameObject[] SettingPanels;
 
     private bool BlurOn = false;
+    private bool CircleNev = false;
     // Start is called before the first frame update
     void Start()
     {
         Text.DOAnchorPos(Vector2.zero,1).SetEase(Ease.OutQuint);
         Circle.DOMoveX(3.52f,1).SetEase(Ease.OutQuint);
+        Player.DOMoveX(3.52f, 1).SetEase(Ease.OutQuint);
+        RotateCircle();
     }
 
     // Update is called once per frame
@@ -64,5 +68,14 @@ public class UIDetail : MonoBehaviour
             SettingPanels[0].SetActive(false);
             Text.gameObject.SetActive(true);
         }
+    }
+
+    void RotateCircle()
+    {
+        if(!CircleNev) Circle.DORotate(new Vector3(0,0,25),10);
+        else Circle.DORotate(new Vector3(0, 0, 0), 10);
+
+        CircleNev = !CircleNev;
+        Invoke("RotateCircle",10);
     }
 }

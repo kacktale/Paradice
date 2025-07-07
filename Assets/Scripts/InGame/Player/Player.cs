@@ -56,17 +56,26 @@ public class Player : MonoBehaviour
 
     public GameObject PausePanel;
     public Slider hpBar;
+    private Animator anim;
     void Awake()
     {
         CurHealth = MaxHealth;
+
         rb = GetComponent<Rigidbody2D>();
+
         RemainStick = 2;
+
         defaultLayer = gameObject.layer;
+
         DashCoolUI.maxValue = DashCool;
         DashCoolUI.value = 0;
+
         hpBar.maxValue = MaxHealth;
         hpBar.value = CurHealth;
+
         MaxSpeed = MoveSpeed;
+
+        anim = GetComponent<Animator>();
     }
 
     private void Start()
@@ -106,10 +115,18 @@ public class Player : MonoBehaviour
             {
                 transform.rotation = Quaternion.Euler(0, 0, 0);
             }
+            anim.SetBool("IsWalk", IsKeyInput(h));
             rb.velocity = new Vector2(h * MoveSpeed, rb.velocity.y);
         }
         hpBar.value = CurHealth;
     }
+
+    bool IsKeyInput(float h)
+    {
+        if (h == 0) return false;
+        else return true;
+    }
+
     private void Update()
     {
         JumpCheck();
@@ -139,37 +156,19 @@ public class Player : MonoBehaviour
                 StickIndicator Indicator;
                 if (!CanJump)
                 {
-                    if (transform.rotation == Quaternion.Euler(0, 0, 0))
-                    {
-                        stick = Instantiate(Stick, transform.position + Vector3.left, Quaternion.identity);
-                        StickCs = stick.GetComponent<StickMove>();
-                        StickCs.TargetPos = CrossHair.gameObject.transform;
-                        StickCs.player = gameObject.transform;
-                        Indicator = stick.GetComponent<StickIndicator>();
-                        Indicator.Target = stick;
-                        Indicator.Indicator = IndicatorObj;
-                    }
-                    else
-                    {
-                        stick = Instantiate(Stick, transform.position - Vector3.left, Quaternion.identity);
-                        StickCs = stick.GetComponent<StickMove>();
-                        StickCs.TargetPos = CrossHair.gameObject.transform;
-                        StickCs.player = gameObject.transform;
-                        Indicator = stick.GetComponent<StickIndicator>();
-                        Indicator.Target = stick;
-                        Indicator.Indicator = IndicatorObj;
-                    }
+                    Vector3 CheckRotation = transform.rotation == Quaternion.Euler(0, 0, 0) ? Vector3.left : Vector3.right;
+                    stick = Instantiate(Stick, transform.position + CheckRotation, Quaternion.identity);
                 }
-                else
-                {
-                    stick = Instantiate(Stick, transform.position, Quaternion.identity);
-                    StickCs = stick.GetComponent<StickMove>();
-                    StickCs.TargetPos = CrossHair.gameObject.transform;
-                    StickCs.player = gameObject.transform;
-                    Indicator = stick.GetComponent<StickIndicator>();
-                    Indicator.Target = stick;
-                    Indicator.Indicator = IndicatorObj;
-                }
+                else  stick = Instantiate(Stick, transform.position, Quaternion.identity);
+
+                StickCs = stick.GetComponent<StickMove>();
+                StickCs.TargetPos = CrossHair.gameObject.transform;
+                StickCs.player = gameObject.transform;
+
+                Indicator = stick.GetComponent<StickIndicator>();
+                Indicator.Target = stick;
+                Indicator.Indicator = IndicatorObj;
+
                 StartCoroutine(StickEffect());
                 RemainStick--;
             }
@@ -180,6 +179,7 @@ public class Player : MonoBehaviour
             CanDash = false;
             IsDashing = true;
             StartCoroutine(Dash());
+            StopCoroutine(ShowDashCool());
             StartCoroutine(ShowDashCool());
         }
         //카메라 줌(이펙트)
@@ -206,9 +206,9 @@ public class Player : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if(!PausePanel.active)
+            if (!PausePanel.active)
             {
                 PausePanel.SetActive(true);
                 Time.timeScale = 0;
@@ -220,7 +220,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if(RemainStick == 2) IndicatorObj.SetActive(false);
+        if (RemainStick == 2) IndicatorObj.SetActive(false);
     }
     public void OnDamage(float Damage)
     {
@@ -394,7 +394,7 @@ public class Player : MonoBehaviour
 
     void TashUIHide()
     {
-        TashUI.DOAnchorPos(new Vector2(517,396),2);
+        TashUI.DOAnchorPos(new Vector2(517, 396), 2);
     }
     IEnumerator ShowDashCool()
     {
@@ -411,20 +411,5 @@ public class Player : MonoBehaviour
             pos.DOAnchorPos3DX(-1400, 1);
         yield return new WaitForSeconds(1);
         ChargingAnim = false;
-    }
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Wall"))
-        {
-            //StopCoroutine(Dash());
-            //CanDash = true;
-
-            //rb.gravityScale = 1f;
-            //PlayerMaxYPos = Vector2.zero;
-            //Effect.transform.DOScale(0, 0.1f);
-            //IsJump = false;
-            //CanJump = true;
-            //MoveSpeed = 5;
-        }
     }
 }

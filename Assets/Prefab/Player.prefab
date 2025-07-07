@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3116690304183224869}
   - component: {fileID: 4235928569604263061}
   - component: {fileID: 8895754266283213814}
+  - component: {fileID: 6766155434126991668}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -29,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 998951618624154694}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.12, y: -0.32, z: 0}
+  m_LocalPosition: {x: -2.12, y: 6.77, z: 0}
   m_LocalScale: {x: 0.45, y: 0.45, z: 0.45}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -77,9 +78,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
+  m_Sprite: {fileID: -2112590984, guid: 9d0e481d0511a0a41b77e564bb9a4675, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 2}
@@ -104,6 +105,8 @@ MonoBehaviour:
   JumpForce: 3
   IsJump: 0
   MaxHealth: 10
+  CurHealth: 0
+  Mujuck: 0
   Effect: {fileID: 7499970625982829183}
   Stick: {fileID: 4301422635556445393, guid: cab7188e3e9fc684ea11959290d072d9, type: 3}
   CrossHair: {fileID: 0}
@@ -112,11 +115,19 @@ MonoBehaviour:
   CanDash: 1
   DashSpeed: 20
   DashTime: 0.2
+  DashCool: 1.5
   WallLayer:
     serializedVersion: 2
     m_Bits: 64
   VirtualCamera: {fileID: 0}
   dashLayerName: DashOnly
+  Transition: {fileID: 0}
+  DashCoolUI: {fileID: 0}
+  DashTXT: {fileID: 0}
+  IndicatorObj: {fileID: 0}
+  TashUI: {fileID: 0}
+  PausePanel: {fileID: 0}
+  hpBar: {fileID: 0}
 --- !u!70 &4235928569604263061
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -179,6 +190,27 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!95 &6766155434126991668
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998951618624154694}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a2679e2f04cd73f47a10c782b0db9ee7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7499970625982829183
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,7 +239,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6885241602479425716}
@@ -252,7 +284,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 0.64330244, g: 0, b: 1, a: 0.11372549}
   m_FlipX: 0
